@@ -142,8 +142,33 @@ data['SexCat'].loc[(data['Sex'] == 'female') & (data['Age'] > 50)] = 'seniorfema
 # Taking another look at the data
 data.head(10)
 
-#%%
+#%% IMPORT MODEL LIBS.
+import collections
+import matplotlib.pyplot as plt
+from scipy import stats
+from imblearn.combine import SMOTEENN
+from imblearn.over_sampling import SMOTE
+from imblearn.under_sampling import RandomUnderSampler
+from category_encoders import OneHotEncoder
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.experimental import enable_iterative_imputer
+from sklearn.impute import SimpleImputer, IterativeImputer
+from sklearn.model_selection import KFold, StratifiedKFold, RandomizedSearchCV, train_test_split
+from sklearn.preprocessing import StandardScaler, MinMaxScaler, PolynomialFeatures
+from sklearn.metrics import f1_score, precision_score, recall_score, roc_auc_score, accuracy_score, make_scorer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier, StackingClassifier, VotingClassifier
+from sklearn.svm import SVC
+from sklearn.decomposition import PCA
+from sklearn.manifold import TSNE
+from xgboost import XGBClassifier, plot_importance as plot_importance_xgb
+from lightgbm import LGBMClassifier, plot_importance as plot_importance_lgbm
 def get_feature_names(df):
+    
+#%%
     # Splitting the target
     target = df['Survived']
 
@@ -163,7 +188,53 @@ def get_feature_names(df):
 
     return target, categorical_columns, numeric_columns
 
-target, categorical_columns, numeric_columns = get_feature_names(df)
+target, categorical_columns, numeric_columns = get_feature_names(data)
+
+
+#%% Balancing the data
+
+
+def balancingClassesRus(x_train, y_train):
+    
+    # Using RandomUnderSampler to balance our training data points
+    rus = RandomUnderSampler(random_state=7)
+    features_balanced, target_balanced = rus.fit_resample(x_train, y_train)
+    
+    print("Count for each class value after RandomUnderSampler:", collections.Counter(target_balanced))
+    
+    return features_balanced, target_balanced
+
+
+def balancingClassesSmoteenn(x_train, y_train):
+    
+    # Using SMOTEEN to balance our training data points
+    smn = SMOTEENN(random_state=7)
+    features_balanced, target_balanced = smn.fit_resample(x_train, y_train)
+    
+    print("Count for each class value after SMOTEEN:", collections.Counter(target_balanced))
+    
+    return features_balanced, target_balanced
+
+def balancingClassesSmote(x_train, y_train):
+
+    # Using SMOTE to to balance our training data points
+    sm = SMOTE(random_state=7)
+    features_balanced, target_balanced = sm.fit_resample(x_train, y_train)
+
+    print("Count for each class value after SMOTE:", collections.Counter(target_balanced))
+
+    return features_balanced, target_balanced
+
+
+
+
+
+
+
+
+
+
+
 
 
 
